@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stest
+  labels:
+    app: stest
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: stest
+  template:
+    metadata:
+      labels:
+        app: stest
+    spec:
+      containers:
+      - resources:
+           limits:
+            cpu: 0.250
+            memory: 32Mi
+        name: busybox
+        image: busybox
+        command: ['sh', '-c', 'echo Container 1 is Running ; sleep 3600']
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - mountPath: /data
+          name: vol2
+      volumes:
+       - name: vol2
+         persistentVolumeClaim:
+          claimName: vol2-claim
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: vol2-claim
+spec:
+  storageClassName: openebs-sc1
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Mi

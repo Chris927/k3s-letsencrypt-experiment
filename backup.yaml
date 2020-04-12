@@ -1,0 +1,28 @@
+---
+apiVersion: velero.io/v1
+kind: BackupStorageLocation
+metadata:
+  name: default
+  namespace: velero
+spec:
+  provider: aws
+  objectStorage:
+    bucket: k3s-le-backup-experimental
+---
+apiVersion: velero.io/v1
+kind: VolumeSnapshotLocation
+metadata:
+  name: aws-bucket
+  namespace: velero
+spec:
+  provider: openebs.io/cstor-blockstore
+  config:
+    bucket: k3s-le-backup-experimental
+    prefix: cstor
+    provider: aws
+    region: eu-west-1
+    # You can specify the multipart_chunksize  here for explicitness.
+    # multiPartChunkSize can be from 5Mi(5*1024*1024 Bytes) to 5Gi
+    # For more information: https://docs.aws.amazon.com/AmazonS3/latest/dev/qfacts.html
+    # If not set then it will be calculated from the file size
+    multiPartChunkSize: 64Mi
